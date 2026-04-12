@@ -1,0 +1,31 @@
+.guestbook-scene { background: var(--cream); }
+.guestbook-subtitle { text-align: center; max-width: 600px; margin: 0 auto 2rem; color: var(--mocha); }
+.guestbook-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+.messages-wall { background: rgba(255,255,245,0.7); backdrop-filter: blur(4px); border-radius: 28px; padding: 1.5rem; max-height: 500px; overflow-y: auto; }
+.messages-list { display: flex; flex-direction: column; gap: 1.2rem; }
+.message-card { background: white; border-radius: 20px; padding: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 4px solid var(--rose); }
+.message-name { font-weight: 600; font-family: var(--font-display); color: var(--sage); margin-bottom: 0.3rem; }
+.message-text { font-size: 0.9rem; margin: 0.5rem 0; color: var(--ink); }
+.ai-reply { background: #f9f5ef; padding: 0.6rem; border-radius: 16px; margin-top: 0.6rem; font-size: 0.85rem; font-style: italic; color: var(--mocha); border-left: 2px solid var(--lavender); }
+.ai-reply::before { content: "🤖 AI balas: "; font-weight: 500; color: var(--rose); }
+.empty-message { text-align: center; color: var(--mocha); padding: 2rem; }
+.guestbook-interaction { display: flex; flex-direction: column; gap: 2rem; }
+.send-message-form, .ai-chat-box { background: rgba(255,255,245,0.7); backdrop-filter: blur(4px); border-radius: 28px; padding: 1.5rem; }
+.form-input { width: 100%; padding: 10px 14px; margin-bottom: 0.8rem; border: 1px solid #e0d9cf; border-radius: 40px; font-family: var(--font-body); background: white; }
+textarea.form-input { border-radius: 24px; resize: vertical; }
+.btn-chat { background: var(--lavender); border: none; padding: 8px 20px; border-radius: 40px; margin-left: 8px; font-family: var(--font-body); cursor: pointer; transition: var(--transition-smooth); }
+.chat-messages { height: 200px; overflow-y: auto; background: rgba(255,255,250,0.6); border-radius: 20px; padding: 0.8rem; margin-bottom: 0.8rem; display: flex; flex-direction: column; gap: 8px; }
+.chat-bot, .chat-user { max-width: 85%; padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; }
+.chat-bot { background: var(--sage); color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+.chat-user { background: white; border: 1px solid var(--lavender); align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-input-area { display: flex; gap: 8px; }
+.chat-input-area input { flex: 1; margin-bottom: 0; }
+@media (max-width: 700px) { .guestbook-grid { grid-template-columns: 1fr; } .messages-wall { max-height: 400px; } }
+
+.scene-title {
+    transition: all 0.2s ease;
+}
+#scene6 .scene-title:hover {
+    text-shadow: 0 0 3px var(--rose);
+    letter-spacing: 1px;
+}
