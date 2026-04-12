@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Undangan Pernikahan Digital - Lisa Amelia & Raihan Fajar Rizqy">
+    <title>Undangan Pernikahan | Lisa & Raihan</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/scenes.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/guestbook.css">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237A9B76'%3E%3Cpath d='M12 2L15 8.5L22 9.5L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9.5L9 8.5L12 2Z'/%3E%3C/svg%3E">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loading-names">Lisa Amelia & Raihan Fajar Rizqy</div>
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div id="scroll-progress"></div>
+
+    <div id="nav-dots">
+        <button class="nav-dot" data-scene="0"></button>
+        <button class="nav-dot" data-scene="1"></button>
+        <button class="nav-dot" data-scene="2"></button>
+        <button class="nav-dot" data-scene="3"></button>
+        <button class="nav-dot" data-scene="4"></button>
+        <button class="nav-dot" data-scene="5"></button>
+        <button class="nav-dot" data-scene="6"></button>
+        <button class="nav-dot" data-scene="7"></button>
+    </div>
+
+    <button id="audio-toggle" aria-label="Toggle ambient music">
+        <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </button>
+
+    <main>
+        <!-- SCENE 0 - HERO -->
+        <section id="scene0" class="scene hero-scene">
+            <div class="container hero-container">
+                <div class="hero-floral-bg"></div>
+                <div class="hero-content">
+                    <span class="hero-label">Undangan Pernikahan</span>
+                    <h1 class="hero-names">
+                        <span class="name-1">Lisa Amelia</span>
+                        <span class="ampersand easter-trigger">&</span>
+                        <span class="name-2">Raihan Fajar Rizqy</span>
+                    </h1>
+                    <p class="hero-tagline italic">"Bersama dalam kasih, tumbuh dalam iman"</p>
+                    <div class="scroll-hint">
+                        <span>Gulir ke bawah</span>
+                        <div class="scroll-arrow"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="petals-container"></div>
+            <div id="guest-greeting" class="guest-greeting hidden"></div>
+        </section>
+
+        <!-- SCENE 1 - OUR STORY -->
+        <section id="scene1" class="scene story-scene">
+            <div class="container">
+                <h2 class="scene-title" data-aos="fade-up">Our Story</h2>
+                <div class="timeline">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-item left" data-aos="fade-up">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">2019</div>
+                            <h3>Pertemuan Pertama</h3>
+                            <p>Bertemu di acara kampus, diskusi tanpa akhir menjadi awal kisah indah.</p>
+                            <div class="timeline-photo placeholder-img">Foto Pertemuan</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item right" data-aos="fade-up">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">2021</div>
+                            <h3>Jatuh Hati</h3>
+                            <p>Perjalanan bersama menguatkan rasa, dari teman menjadi lebih dari segalanya.</p>
+                            <div class="timeline-photo placeholder-img">Foto Jatuh Hati</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item left" data-aos="fade-up">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">2024</div>
+                            <h3>Lamaran</h3>
+                            <p>Di tepi pantai senja, sebuah pertanyaan dilontarkan dengan harap.</p>
+                            <div class="timeline-photo placeholder-img">Foto Lamaran</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item right" data-aos="fade-up">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-year">2026</div>
+                            <h3>Sekarang</h3>
+                            <p>Bersiap menyatukan mimpi dalam ikatan suci pernikahan.</p>
+                            <div class="timeline-photo placeholder-img">Foto Sekarang</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCENE 2 - SAVE THE DATE -->
+        <section id="scene2" class="scene savedate-scene">
+            <div class="container">
+                <div class="wedding-card" data-aos="zoom-in">
+                    <div class="card-ornament top"></div>
+                    <h2 class="card-title">Save The Date</h2>
+                    <div class="card-names">Lisa Amelia & Raihan Fajar Rizqy</div>
+                    <div class="card-date">Jumat, 10 Juli 2026</div>
+                    <div class="card-detail">
+                        <p>Akad: 08:00 WIB</p>
+                        <p>Resepsi: 10:00 - 14:00 WIB</p>
+                        <p>Kedung Ringin, Pasir Sakti, Lampung Timur</p>
+                    </div>
+                    <div class="card-ornament bottom"></div>
+                </div>
+                <div class="countdown-container" data-aos="fade-up">
+                    <div class="countdown-item"><span id="days" class="countdown-number">00</span><span class="countdown-label">Hari</span></div>
+                    <div class="countdown-item"><span id="hours" class="countdown-number">00</span><span class="countdown-label">Jam</span></div>
+                    <div class="countdown-item"><span id="minutes" class="countdown-number">00</span><span class="countdown-label">Menit</span></div>
+                    <div class="countdown-item"><span id="seconds" class="countdown-number">00</span><span class="countdown-label">Detik</span></div>
+                </div>
+                <div class="calendar-buttons" data-aos="fade-up">
+                    <button class="btn-calendar" id="add-google">Add to Google Calendar</button>
+                    <button class="btn-calendar" id="add-ical">Add to iCal</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCENE 3 - DRESS CODE -->
+        <section id="scene3" class="scene dresscode-scene">
+            <div class="container">
+                <h2 class="scene-title" data-aos="fade-up">Dress in Garden Bloom</h2>
+                <p class="beach-reminder" data-aos="fade-up">
+                    <svg class="icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.5-13h-1v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    Lokasi di tepi pasir pantai – disarankan alas kaki nyaman & perlindungan dari matahari
+                </p>
+                <div class="swatch-container" data-aos="fade-up">
+                    <div class="swatch" data-color="sage" data-tooltip="Sage Green - Elegi alam"></div>
+                    <div class="swatch" data-color="dusty-rose" data-tooltip="Dusty Rose - Romantis lembut"></div>
+                    <div class="swatch" data-color="cream" data-tooltip="Cream - Murni bersih"></div>
+                    <div class="swatch" data-color="lavender" data-tooltip="Lavender - Mistis bunga"></div>
+                    <div class="swatch" data-color="mocha" data-tooltip="Mocha - Hangat tanah"></div>
+                    <div class="swatch" data-color="blush" data-tooltip="Blush Pink - Manis muda"></div>
+                </div>
+                <div class="dresscode-notes" data-aos="fade-up">
+                    <div class="note-item">Warna-warna natural & floral yang segar</div>
+                    <div class="note-item">Hindari warna putih polos & hitam</div>
+                    <div class="note-item">Nyaman dan elegan untuk outdoor pantai</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCENE 4 - VENUE & MAP -->
+        <section id="scene4" class="scene venue-scene">
+            <div class="container">
+                <h2 class="scene-title" data-aos="fade-up">Venue & Lokasi</h2>
+                <div class="venue-grid">
+                    <div class="venue-info" data-aos="fade-right">
+                        <div class="venue-card">
+                            <h3>Akad Nikah</h3>
+                            <p class="venue-name">Kedung Ringin Beach</p>
+                            <p class="venue-address">Kedung Ringin, Kec. Pasir Sakti, Kabupaten Lampung Timur, Lampung 34387</p>
+                            <p class="venue-time">08:00 WIB</p>
+                            <div class="venue-buttons">
+                                <a href="https://waze.com/ul?ll=-5.562134,105.773799&navigate=yes" class="btn-venue waze" target="_blank">Buka Waze</a>
+                                <a href="https://maps.google.com/?q=-5.562134,105.773799" class="btn-venue google-maps" target="_blank">Google Maps</a>
+                            </div>
+                        </div>
+                        <div class="venue-card">
+                            <h3>Resepsi</h3>
+                            <p class="venue-name">Kedung Ringin Beach (Area yang sama)</p>
+                            <p class="venue-address">Kedung Ringin, Pasir Sakti, Lampung Timur</p>
+                            <p class="venue-time">10:00 - 14:00 WIB</p>
+                            <div class="venue-buttons">
+                                <a href="https://waze.com/ul?ll=-5.562134,105.773799&navigate=yes" class="btn-venue waze" target="_blank">Buka Waze</a>
+                                <a href="https://maps.google.com/?q=-5.562134,105.773799" class="btn-venue google-maps" target="_blank">Google Maps</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="map-container" data-aos="fade-left">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.000!2d105.773799!3d-5.562134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e41c4b3b8b3b8b3%3A0x0!2zNcKwMzMnNDMuNyJTIDEwNcKwNDYnMjUuNyJF!5e0!3m2!1sen!2sid!4v1234567890" width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCENE 5 - RSVP -->
+        <section id="scene5" class="scene rsvp-scene">
+            <div class="container">
+                <h2 class="scene-title" data-aos="fade-up">Konfirmasi Kehadiran</h2>
+                <p class="rsvp-subtitle" data-aos="fade-up">Mohon isi data di bawah untuk memudahkan kami</p>
+                
+                <div id="saved-guest-info" class="saved-guest-info hidden" data-aos="fade-up">
+                    <div class="saved-card">
+                        <h3>Kode Unik Anda</h3>
+                        <p id="saved-code-display" class="saved-code"></p>
+                        <div id="saved-qrcode" class="qrcode-center"></div>
+                        <p class="saved-note">Simpan kode ini untuk registrasi di lokasi.</p>
+                        <button id="reset-guest-btn" class="btn-reset">Lakukan RSVP Ulang</button>
+                    </div>
+                </div>
+                
+                <form id="rsvp-form" data-aos="fade-up">
+                    <div class="form-group"><input type="text" id="rsvp-name" placeholder="Nama Lengkap" required></div>
+                    <div class="form-group radio-group">
+                        <label class="radio-pill"><input type="radio" name="attendance" value="hadir" required> <span>Hadir</span></label>
+                        <label class="radio-pill"><input type="radio" name="attendance" value="tidak"> <span>Tidak Hadir</span></label>
+                    </div>
+                    <div class="form-group" id="guest-count-group" style="display:none;">
+                        <select id="guest-count"><option value="1">1 Tamu</option><option value="2">2 Tamu</option><option value="3">3 Tamu</option><option value="4">4 Tamu</option></select>
+                    </div>
+                    <button type="submit" class="btn-submit">Kirim Konfirmasi</button>
+                </form>
+                <div id="rsvp-success" class="rsvp-success hidden"></div>
+                <div id="rsvp-error" class="rsvp-error hidden"></div>
+            </div>
+        </section>
+
+        <!-- SCENE 6 - GUESTBOOK -->
+        <section id="scene6" class="scene guestbook-scene">
+            <div class="container">
+                <h2 class="scene-title" data-aos="fade-up">Wall of Love & Harapan</h2>
+                <p class="guestbook-subtitle" data-aos="fade-up">Tuliskan doa dan harapan untuk kedua mempelai</p>
+                <div class="guestbook-grid" data-aos="fade-up">
+                    <div class="messages-wall">
+                        <h3>Pesan dari Tamu</h3>
+                        <div id="messages-list" class="messages-list"><div class="empty-message">Belum ada pesan. Jadilah yang pertama.</div></div>
+                    </div>
+                    <div class="guestbook-interaction">
+                        <div class="send-message-form">
+                            <h3>Tulis Pesan & Harapan</h3>
+                            <input type="text" id="guest-name" placeholder="Nama Anda" class="form-input">
+                            <textarea id="guest-message" rows="3" placeholder="Doa / harapan / kesan untuk kedua mempelai..." class="form-input"></textarea>
+                            <button id="submit-message" class="btn-submit">Kirim Pesan</button>
+                        </div>
+                        <div class="ai-chat-box">
+                            <h3>AI Wedding Assistant</h3>
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="chat-bot">Halo! Aku asisten AI pernikahan Lisa & Raihan. Tanyakan apa saja tentang acara, lokasi, dress code, atau minta saran ucapan.</div>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" placeholder="Tanya sesuatu..." class="form-input">
+                                <button id="send-chat" class="btn-chat">Kirim</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCENE 7 - GIFT & CLOSING -->
+        <section id="scene7" class="scene gift-closing-scene">
+            <div class="container">
+                <h2 class="scene-title" data-aos="fade-up">Tanda Kasih</h2>
+                <div class="gift-cards" data-aos="fade-up">
+                    <div class="gift-card">
+                        <div class="bank-name">Bank Mandiri</div>
+                        <div class="account-name">a.n. Lisa Amelia</div>
+                        <div class="account-number">1234567890 <button class="copy-btn" data-copy="1234567890">Salin</button></div>
+                        <div class="qr-placeholder">Scan QR</div>
+                        <div class="qr-code"></div>
+                    </div>
+                    <div class="gift-card">
+                        <div class="bank-name">Bank BCA</div>
+                        <div class="account-name">a.n. Raihan Fajar Rizqy</div>
+                        <div class="account-number">0987654321 <button class="copy-btn" data-copy="0987654321">Salin</button></div>
+                        <div class="qr-placeholder">Scan QR</div>
+                        <div class="qr-code"></div>
+                    </div>
+                </div>
+                <div class="closing-section" data-aos="fade-up">
+                    <div class="closing-ornament">
+                        <svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M12 2L15 8.5L22 9.5L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9.5L9 8.5L12 2Z"/></svg>
+                    </div>
+                    <p class="closing-quote italic">"Cinta bukan saling menatap satu sama lain, tetapi melihat ke arah yang sama bersama-sama."</p>
+                    <div class="signature">Lisa & Raihan</div>
+                    <div class="family-name">Keluarga Besar Amelia & Keluarga Besar Rizqy</div>
+                    <div class="contact-cs">
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        Hubungi: <a href="tel:+628123456789">+62 812-3456-7890</a> (Lisa)
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Easter Egg Modal -->
+    <div id="easter-modal" class="easter-modal hidden">
+        <div class="easter-content"><span class="close-modal">&times;</span><h2>Secret Garden</h2><p>Terima kasih telah menemukan kejutan ini.</p><p>Doa terbaik untuk cinta yang abadi.</p></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/countdown.js"></script>
+    <script src="js/rsvp.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/easter.js"></script>
+    <script src="js/scroll.js"></script>
+    <script src="js/guestbook.js"></script>
+    <!-- Inisialisasi Firebase (compat version) -->
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCDjGcWD3PZbr8UAYSGFgiyLFNH-7uuVx0",
+        authDomain: "undangan-6f675.firebaseapp.com",
+        databaseURL: "https://undangan-6f675-default-rtdb.firebaseio.com",
+        projectId: "undangan-6f675",
+        storageBucket: "undangan-6f675.firebasestorage.app",
+        messagingSenderId: "852724173933",
+        appId: "1:852724173933:web:e727d4b232a5632d588364",
+        measurementId: "G-SES81QSV4T"
+    };
+    firebase.initializeApp(firebaseConfig);
+    window.db = firebase.database();
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TV Reception - Pernikahan Lisa & Raihan</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #1a2a1a 0%, #2c1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cormorant Garamond', 'Georgia', serif;
+            overflow: hidden;
+        }
+        .tv-screen {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #F5EDE0;
+            position: relative;
+        }
+        .waiting {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.5);
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(198,164,63,0.5);
+        }
+        .guest-card {
+            background: rgba(245,237,224,0.95);
+            padding: 3rem 5rem;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 2px solid #C6A43F;
+        }
+        .guest-card.show { transform: scale(1); }
+        .guest-name {
+            font-size: 5rem;
+            font-weight: 600;
+            color: #2C2018;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        .welcome {
+            font-size: 2rem;
+            color: #7A9B76;
+            letter-spacing: 2px;
+        }
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #C6A43F;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            .guest-name { font-size: 2.5rem; }
+            .guest-card { padding: 1.5rem 2rem; }
+            .waiting { font-size: 1.8rem; }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="tv-screen">
+        <div id="displayArea" class="waiting">
+            Menunggu kedatangan tamu...
+        </div>
+        <div class="footer">Pernikahan Lisa & Raihan | 10 Juli 2026</div>
+    </div>
+
+    <script>
+       const firebaseConfig = {
+    apiKey: "AIzaSyCDjGcWD3PZbr8UAYSGFgiyLFNH-7uuVx0",
+    authDomain: "undangan-6f675.firebaseapp.com",
+    databaseURL: "https://undangan-6f675-default-rtdb.firebaseio.com",
+    projectId: "undangan-6f675",
+    storageBucket: "undangan-6f675.firebasestorage.app",
+    messagingSenderId: "852724173933",
+    appId: "1:852724173933:web:e727d4b232a5632d588364",
+    measurementId: "G-SES81QSV4T"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const checkinsRef = database.ref('checkins');
+        
+        let currentGuestCard = null;
+        
+        checkinsRef.on('child_added', (snapshot) => {
+            const guest = snapshot.val();
+            showGuestOnTV(guest.name);
+            triggerConfetti();
+        });
+        
+        function showGuestOnTV(name) {
+            const container = document.getElementById('displayArea');
+            if (currentGuestCard) currentGuestCard.remove();
+            const card = document.createElement('div');
+            card.className = 'guest-card';
+            card.innerHTML = `<div class="guest-name">${escapeHtml(name)}</div><div class="welcome">Selamat Datang ✨</div>`;
+            container.innerHTML = '';
+            container.appendChild(card);
+            currentGuestCard = card;
+            setTimeout(() => card.classList.add('show'), 50);
+            setTimeout(() => {
+                if (currentGuestCard === card) {
+                    container.innerHTML = '<div class="waiting">Menunggu kedatangan tamu...</div>';
+                    currentGuestCard = null;
+                }
+            }, 8000);
+        }
+        
+        function triggerConfetti() {
+            for (let i = 0; i < 150; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                conf.style.animation = `confettiFall ${1 + Math.random() * 2}s linear forwards`;
+                document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 2500);
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    </script>
+</body>
+</html>
