@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Reception · Raihan & Lisa</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <style>
+    /* ===== DESIGN SYSTEM ===== */
+    :root {
+      --bg-primary: #F9F7F2;       /* soft beige */
+      --bg-card: #FFFFFF;
+      --accent-gold: #C9956C;       /* warm gold */
+      --accent-gold-light: #D4AF84;
+      --text-primary: #2C2B28;
+      --text-secondary: #6B6560;
+      --success: #2E7D5E;
+      --success-light: #E8F3EE;
+      --error: #C53B3B;
+      --error-light: #FDF0F0;
+      --warning: #D9822B;
+      --warning-light: #FEF7ED;
+      --border-light: #E7E2D8;
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+      --font-serif: 'Cormorant Garamond', serif;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg-primary);
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    /* Login Screen */
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .login-card {
+      background: var(--bg-card);
+      padding: 48px 40px;
+      border-radius: 28px;
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      border: 1px solid var(--border-light);
+    }
+    .login-card h2 {
+      font-family: var(--font-serif);
+      font-size: 2.4rem;
+      font-weight: 500;
+      color: var(--accent-gold);
+      margin-bottom: 1.5rem;
+    }
+    .login-card input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border-light);
+      border-radius: 16px;
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      transition: border 0.15s;
+    }
+    .login-card input:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+    }
+    .btn-login {
+      background: var(--accent-gold);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-login:hover { background: #B07D56; }
+
+    /* Dashboard Layout */
+    .dashboard {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .header h1 {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+    .header-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .total-guests-badge {
+      background: white;
+      padding: 10px 24px;
+      border-radius: 40px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      font-weight: 500;
+    }
+    .total-guests-badge span {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--accent-gold);
+      margin-left: 8px;
+    }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-logout:hover {
+      background: white;
+      border-color: var(--accent-gold-light);
+    }
+
+    /* Grid Utama */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr;
+      gap: 24px;
+    }
+
+    /* ===== SCAN SECTION (FOKUS UTAMA) ===== */
+    .scan-panel {
+      background: var(--bg-card);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+    }
+    .scan-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+    .scan-input-area {
+      margin-bottom: 20px;
+    }
+    .scan-input-area label {
+      display: block;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    #kodeInput {
+      width: 100%;
+      padding: 20px 24px;
+      font-size: 1.8rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      border: 2px solid var(--border-light);
+      border-radius: 20px;
+      background: white;
+      transition: all 0.15s;
+      color: var(--text-primary);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+    }
+    #kodeInput:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 4px rgba(201,149,108,0.1);
+    }
+    .scan-hint {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* Feedback Card (besar, jelas) */
+    .feedback-card {
+      margin: 24px 0;
+      padding: 0;
+      border-radius: 24px;
+      transition: all 0.2s;
+    }
+    .feedback-content {
+      padding: 28px 24px;
+      border-radius: 24px;
+    }
+    .feedback-success {
+      background: var(--success-light);
+      border-left: 8px solid var(--success);
+    }
+    .feedback-error {
+      background: var(--error-light);
+      border-left: 8px solid var(--error);
+    }
+    .feedback-duplicate {
+      background: var(--warning-light);
+      border-left: 8px solid var(--warning);
+    }
+    .feedback-guest-name {
+      font-size: 2.8rem;
+      font-weight: 600;
+      font-family: var(--font-serif);
+      line-height: 1.2;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feedback-detail {
+      font-size: 1.2rem;
+      opacity: 0.85;
+    }
+    .feedback-message {
+      font-size: 1.4rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Manual button (sekunder) */
+    .manual-validate-btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1.5px solid var(--border-light);
+      border-radius: 16px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .manual-validate-btn:hover {
+      background: white;
+      border-color: var(--accent-gold-light);
+    }
+
+    /* Stats Ringkas di Scan Panel */
+    .quick-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-light);
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 600;
+      font-family: var(--font-serif);
+      color: var(--accent-gold);
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+    }
+
+    /* ===== RIGHT PANEL ===== */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Tabel Tamu */
+    .guest-table-card {
+      background: var(--bg-card);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .table-header h3 {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 500;
+    }
+    .filter-select {
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: 1px solid var(--border-light);
+      background: white;
+      font-family: var(--font-sans);
+    }
+    .table-container {
+      overflow-y: auto;
+      max-height: 400px;
+      border-radius: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      text-align: left;
+      padding: 12px 8px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      background: white;
+    }
+    td {
+      padding: 14px 8px;
+      border-bottom: 1px solid #f0ebe4;
+    }
+    .guest-row-new {
+      background: rgba(201,149,108,0.06);
+      animation: highlightPulse 2s ease;
+    }
+    @keyframes highlightPulse {
+      0% { background: rgba(201,149,108,0.15); }
+      100% { background: transparent; }
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-hadir { background: var(--success-light); color: var(--success); }
+    .status-belum { background: #F3EFE9; color: var(--text-secondary); }
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      opacity: 0.6;
+      padding: 6px 8px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delete-btn:hover {
+      opacity: 1;
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    /* Panel Pesan */
+    .messages-card {
+      background: var(--bg-card);
+      border-radius: 28px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-light);
+    }
+    .messages-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .messages-header h4 {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 500;
+    }
+    .message-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .message-content {
+      flex: 1;
+    }
+    .message-sender {
+      font-weight: 600;
+    }
+    .message-text {
+      color: var(--text-secondary);
+    }
+    .message-delete {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      opacity: 0.5;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      margin-left: 8px;
+    }
+    .message-delete:hover {
+      opacity: 1;
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    /* Utility */
+    .hidden { display: none !important; }
+    .icon { width: 24px; height: 24px; vertical-align: middle; }
+    .icon-sm { width: 18px; height: 18px; }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-card">
+      <h2>Reception</h2>
+      <form id="loginForm">
+        <input type="password" id="password" placeholder="Password" autofocus>
+        <button type="submit" class="btn-login">Masuk Dashboard</button>
+      </form>
+      <p id="loginError" style="color:var(--error); margin-top:16px;"></p>
+    </div>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div id="dashboardScreen" class="dashboard hidden">
+    <div class="header">
+      <h1>Selamat Datang, Tim Resepsi</h1>
+      <div class="header-actions">
+        <div class="total-guests-badge">
+          Total Hadir <span id="totalHadirCount">0</span>
+        </div>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <!-- LEFT: SCAN PANEL (DOMINAN) -->
+      <div class="scan-panel">
+        <div class="scan-title">Scan Tiket Tamu</div>
+        <div class="scan-input-area">
+          <label>Kode Tiket / QR</label>
+          <input type="text" id="kodeInput" placeholder="WD-XXXXXX" autocomplete="off" autofocus>
+          <div class="scan-hint">Arahkan scanner, kode akan otomatis terproses</div>
+        </div>
+
+        <!-- FEEDBACK CARD (BESAR) -->
+        <div id="feedbackCard" class="feedback-card hidden">
+          <div id="feedbackContent" class="feedback-content">
+            <!-- dinamis -->
+          </div>
+        </div>
+
+        <button class="manual-validate-btn" id="manualValidateBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+          </svg>
+          Validasi Manual
+        </button>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+          <div class="stat-item">
+            <div class="stat-number" id="statTerdaftar">0</div>
+            <div class="stat-label">Terdaftar</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statHadir">0</div>
+            <div class="stat-label">Hadir</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statBelum">0</div>
+            <div class="stat-label">Belum</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: TABEL TAMU & PESAN -->
+      <div class="right-panel">
+        <div class="guest-table-card">
+          <div class="table-header">
+            <h3>Daftar Tamu</h3>
+            <select id="filterStatus" class="filter-select">
+              <option value="all">Semua</option>
+              <option value="hadir">Sudah Hadir</option>
+              <option value="belum_hadir">Belum Hadir</option>
+            </select>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>Nama</th><th>Kode</th><th>Jml</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody id="tamuTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="messages-card">
+          <div class="messages-header">
+            <h4>Ucapan Terbaru</h4>
+            <span style="color:var(--text-secondary); font-size:0.8rem;" id="msgCount">0</span>
+          </div>
+          <div id="messagesList" style="max-height:180px; overflow-y:auto;">
+            <!-- dinamis -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script>
+    (function(){
+      const ADMIN_PASS = "SEMOGALANCAR";
+      const loginScreen = document.getElementById('loginScreen');
+      const dashboardScreen = document.getElementById('dashboardScreen');
+      const loginForm = document.getElementById('loginForm');
+      const loginError = document.getElementById('loginError');
+      
+      // Login
+      if (sessionStorage.getItem('adminAuth') === 'true') {
+        showDashboard();
+      }
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (document.getElementById('password').value === ADMIN_PASS) {
+          sessionStorage.setItem('adminAuth', 'true');
+          showDashboard();
+        } else {
+          loginError.textContent = 'Password salah';
+        }
+      });
+
+      function showDashboard() {
+        loginScreen.classList.add('hidden');
+        dashboardScreen.classList.remove('hidden');
+        initDashboard();
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        sessionStorage.removeItem('adminAuth');
+        location.reload();
+      });
+
+      // Data
+      let tamuData = [];
+      
+      function initDashboard() {
+        const kodeInput = document.getElementById('kodeInput');
+        kodeInput.focus();
+        
+        // Auto process saat input berubah (scanner)
+        kodeInput.addEventListener('change', () => processScan(kodeInput.value.trim().toUpperCase()));
+        kodeInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            processScan(kodeInput.value.trim().toUpperCase());
+          }
+        });
+        
+        document.getElementById('manualValidateBtn').addEventListener('click', () => {
+          processScan(kodeInput.value.trim().toUpperCase());
+        });
+
+        // Firebase listeners
+        db.ref('tamu').on('value', (snap) => {
+          const data = snap.val() || {};
+          let totalTerdaftar = 0, hadir = 0, belum = 0;
+          const arr = [];
+          Object.entries(data).forEach(([key, val]) => {
+            totalTerdaftar++;
+            if (val.status === 'hadir') hadir++; else belum++;
+            arr.push({ key, ...val });
+          });
+          tamuData = arr;
+          
+          document.getElementById('statTerdaftar').textContent = totalTerdaftar;
+          document.getElementById('statHadir').textContent = hadir;
+          document.getElementById('statBelum').textContent = belum;
+          document.getElementById('totalHadirCount').textContent = hadir;
+          
+          renderTable();
+        });
+
+        db.ref('pesan').limitToLast(10).on('value', (snap) => {
+          const data = snap.val() || {};
+          const entries = Object.entries(data);
+          const messages = entries.map(([key, val]) => ({ key, ...val }));
+          messages.sort((a,b) => (b.waktu||0) - (a.waktu||0));
+          
+          const container = document.getElementById('messagesList');
+          document.getElementById('msgCount').textContent = messages.length;
+          
+          container.innerHTML = messages.slice(0,5).map(m => `
+            <div class="message-item" data-key="${m.key}">
+              <div class="message-content">
+                <span class="message-sender">${escapeHtml(m.nama)}</span>
+                <div class="message-text">${escapeHtml(m.pesan.substring(0,40))}${m.pesan.length>40?'...':''}</div>
+              </div>
+              <button class="message-delete" data-key="${m.key}" title="Hapus ucapan">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+              </button>
+            </div>
+          `).join('') || '<div style="padding:12px; text-align:center; color:var(--text-secondary);">Belum ada ucapan</div>';
+          
+          attachMessageDeleteListeners();
+        });
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function attachMessageDeleteListeners() {
+        document.querySelectorAll('.message-delete').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.key;
+            if (!confirm('Hapus ucapan ini?')) return;
+            await db.ref(`pesan/${key}`).remove();
+          });
+        });
+      }
+
+      function renderTable() {
+        const filter = document.getElementById('filterStatus').value;
+        const tbody = document.getElementById('tamuTableBody');
+        const filtered = tamuData.filter(t => filter === 'all' || t.status === filter)
+                                 .sort((a,b) => b.waktu_daftar - a.waktu_daftar);
+        tbody.innerHTML = filtered.map((t, i) => `
+          <tr data-key="${t.key}" class="${i===0 ? 'guest-row-new' : ''}">
+            <td><strong>${t.nama}</strong></td>
+            <td><code style="font-size:0.9rem;">${t.kode}</code></td>
+            <td>${t.jumlah}</td>
+            <td><span class="status-badge ${t.status === 'hadir' ? 'status-hadir' : 'status-belum'}">${t.status}</span></td>
+            <td>
+              <button class="delete-btn" data-key="${t.key}" data-type="tamu" title="Hapus tamu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+        attachDeleteListeners();
+      }
+
+      function attachDeleteListeners() {
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.key;
+            if (!confirm('Hapus tamu ini?')) return;
+            await db.ref(`tamu/${key}`).remove();
+            const currentTotal = (await db.ref('meta/total_terdaftar').once('value')).val() || 0;
+            await db.ref('meta/total_terdaftar').set(Math.max(0, currentTotal - 1));
+          });
+        });
+      }
+
+      async function processScan(kode) {
+        const feedbackCard = document.getElementById('feedbackCard');
+        const feedbackContent = document.getElementById('feedbackContent');
+        const input = document.getElementById('kodeInput');
+        
+        if (!kode) {
+          showFeedback('error', 'Masukkan kode tiket');
+          return;
+        }
+
+        const snapshot = await db.ref('tamu').orderByChild('kode').equalTo(kode).once('value');
+        if (!snapshot.exists()) {
+          showFeedback('error', 'Kode tidak ditemukan', kode);
+          input.value = ''; input.focus();
+          return;
+        }
+        
+        const [key, tamu] = Object.entries(snapshot.val())[0];
+        if (tamu.status === 'hadir') {
+          showFeedback('duplicate', tamu.nama, tamu.jumlah, 'Sudah hadir sebelumnya');
+          input.value = ''; input.focus();
+          return;
+        }
+
+        // Update status
+        await db.ref(`tamu/${key}`).update({ status: 'hadir' });
+        // Kirim ke display TV
+        await db.ref('display').set({
+          nama: tamu.nama,
+          jumlah: tamu.jumlah,
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+        
+        showFeedback('success', tamu.nama, tamu.jumlah);
+        input.value = ''; 
+        input.focus();
+      }
+
+      function showFeedback(type, ...args) {
+        const card = document.getElementById('feedbackCard');
+        const content = document.getElementById('feedbackContent');
+        card.classList.remove('hidden');
+        content.className = 'feedback-content';
+        
+        // SVG icon helper
+        const successIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+        const warningIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+        const errorIcon = '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+        
+        if (type === 'success') {
+          content.classList.add('feedback-success');
+          content.innerHTML = `
+            <div class="feedback-guest-name">${successIcon} ${args[0]}</div>
+            <div class="feedback-detail">${args[1]} orang · Selamat datang!</div>
+          `;
+        } else if (type === 'duplicate') {
+          content.classList.add('feedback-duplicate');
+          content.innerHTML = `
+            <div class="feedback-guest-name">${warningIcon} ${args[0]}</div>
+            <div class="feedback-detail">${args[1]} orang · ${args[2]}</div>
+          `;
+        } else {
+          content.classList.add('feedback-error');
+          content.innerHTML = `
+            <div class="feedback-message">${errorIcon} ${args[0]}</div>
+            ${args[1] ? `<div class="feedback-detail">Kode: ${args[1]}</div>` : ''}
+          `;
+        }
+        setTimeout(() => card.classList.add('hidden'), 4000);
+      }
+
+      document.getElementById('filterStatus').addEventListener('change', renderTable);
+    })();
+  </script>
+</body>
+</html>
