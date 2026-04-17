@@ -1,162 +1,519 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>TV Reception - Pernikahan Lisa & Raihan</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: linear-gradient(135deg, #1a2a1a 0%, #2c1a1a 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Cormorant Garamond', 'Georgia', serif;
-            overflow: hidden;
-        }
-        .tv-screen {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #F5EDE0;
-            position: relative;
-        }
-        .waiting {
-            font-size: 4rem;
-            font-weight: 300;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            background: rgba(0,0,0,0.5);
-            padding: 1rem 2rem;
-            border-radius: 60px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(198,164,63,0.5);
-        }
-        .guest-card {
-            background: rgba(245,237,224,0.95);
-            padding: 3rem 5rem;
-            border-radius: 48px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            transform: scale(0.9);
-            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            border: 2px solid #C6A43F;
-        }
-        .guest-card.show { transform: scale(1); }
-        .guest-name {
-            font-size: 5rem;
-            font-weight: 600;
-            color: #2C2018;
-            font-style: italic;
-            margin-bottom: 1rem;
-        }
-        .welcome {
-            font-size: 2rem;
-            color: #7A9B76;
-            letter-spacing: 2px;
-        }
-        .confetti {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            background: #C6A43F;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        @keyframes confettiFall {
-            0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-        .footer {
-            position: absolute;
-            bottom: 20px;
-            font-size: 0.8rem;
-            opacity: 0.6;
-        }
-        @media (max-width: 768px) {
-            .guest-name { font-size: 2.5rem; }
-            .guest-card { padding: 1.5rem 2rem; }
-            .waiting { font-size: 1.8rem; }
-        }
-    </style>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Raihan & Lisa · Reception Display</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #0D0D0D;
+      font-family: 'Inter', sans-serif;
+      color: #ECE7DF;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Vignette gelap di sisi kiri-kanan */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Vignette tambahan di tepi */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      box-shadow: inset 0 0 200px rgba(0,0,0,0.4);
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    /* Grain / noise overlay */
+    .grain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4wNCIgLz48L3N2Zz4=');
+      background-repeat: repeat;
+      pointer-events: none;
+      z-index: 7;
+      opacity: 0.35;
+      mix-blend-mode: overlay;
+    }
+
+    /* Light leak bergerak lambat */
+    .light-leak {
+      position: fixed;
+      top: 0; left: -100%;
+      width: 200%; height: 100%;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(216,192,160,0.015) 45%, 
+        rgba(216,192,160,0.03) 50%, 
+        rgba(216,192,160,0.015) 55%, 
+        transparent 100%);
+      transform: skewX(-15deg);
+      animation: lightLeak 18s infinite ease-in-out;
+      pointer-events: none;
+      z-index: 8;
+    }
+
+    @keyframes lightLeak {
+      0% { left: -100%; }
+      80% { left: 20%; }
+      100% { left: 100%; }
+    }
+
+    /* Partikel debu champagne */
+    .particles {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9;
+    }
+    .particle {
+      position: absolute;
+      background: #D8C0A0;
+      border-radius: 50%;
+      opacity: 0.12;
+      filter: blur(1.2px);
+      animation: floatParticle 22s infinite alternate ease-in-out;
+    }
+    @keyframes floatParticle {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(25px, -40px) scale(1.15); }
+    }
+
+    /* Monogram RL di background - kecil, blur, transparan */
+    .monogram {
+      position: fixed;
+      top: 35%;  /* digeser ke atas sedikit */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Great Vibes', cursive;
+      font-size: 25vw;  /* lebih kecil dari sebelumnya */
+      color: #D8C0A0;
+      opacity: 0.035;   /* sangat transparan */
+      filter: blur(18px);
+      z-index: 2;
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+    }
+
+    /* Kontainer utama */
+    .main-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 15;
+      padding: 2rem;
+      margin-top: -2vh; /* sedikit koreksi visual */
+    }
+
+    /* Ornamen garis atas nama (pendek) */
+    .top-line {
+      width: 240px;
+      height: 1px;
+      background: rgba(216,192,160,0.2);
+      margin-bottom: 1.2rem;
+      animation: expandLine 2s ease-out forwards;
+      transform-origin: center;
+    }
+
+    /* Nama pasangan */
+    .couple-names {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(5rem, 11vw, 7rem);
+      color: #D8C0A0;
+      font-weight: 400;
+      line-height: 1.1;
+      text-align: center;
+      letter-spacing: 0.01em;
+      text-shadow: 0 0 18px rgba(216,192,160,0.12);
+      animation: fadeUp 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(30px);
+      margin-bottom: 0.3rem;
+    }
+
+    /* Ornamen kecil kiri-kanan nama */
+    .name-ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 0.2rem 0 0.5rem;
+      animation: fadeIn 2s 0.5s forwards;
+      opacity: 0;
+    }
+    .ornament-svg {
+      width: 50px;
+      height: 10px;
+      color: rgba(216,192,160,0.35);
+    }
+
+    /* Tanggal */
+    .wedding-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #ECE7DF;
+      margin-bottom: 5rem;  /* spacer 80-100px */
+      animation: fadeUp 1.8s 0.4s forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    /* Area tamu */
+    .guest-area {
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .welcome-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;  /* 44-48px */
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(236,231,223,0.9);
+      text-align: center;
+      line-height: 1.3;
+      transition: opacity 2s ease;
+    }
+
+    .guest-name-display {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5rem;
+      font-weight: 500;
+      color: #D8C0A0;
+      text-shadow: 0 0 20px rgba(216,192,160,0.2);
+      margin-bottom: 0.3rem;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .guest-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: #ECE7DF;
+      opacity: 0.9;
+      letter-spacing: 1.5px;
+    }
+
+    .thankyou-small {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;  /* 24-28px */
+      font-style: italic;
+      color: #ECE7DF;
+      opacity: 0.7;
+      margin-top: 1.2rem;
+    }
+
+    /* Garis bawah teks sambutan (pendek) */
+    .bottom-line {
+      width: 240px;
+      height: 1px;
+      background: rgba(216,192,160,0.15);
+      margin-top: 2rem;
+    }
+
+    /* Bottom bar - lebih rendah dan kecil */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 90px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 3.5rem 0.8rem;
+      z-index: 25;
+      background: linear-gradient(to top, rgba(8,8,8,0.25) 0%, transparent 100%);
+      backdrop-filter: blur(2px);
+      border-top: 1px solid rgba(216,192,160,0.06);
+    }
+
+    .bottom-left {
+      text-align: left;
+    }
+    .clock {
+      font-family: 'Inter', sans-serif;
+      font-size: 2.5rem;  /* 40-48px */
+      font-weight: 300;
+      color: #ECE7DF;
+      letter-spacing: 2px;
+      opacity: 0.8;
+      line-height: 1.2;
+    }
+    .date-bottom {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 300;
+      color: #D8C0A0;
+      letter-spacing: 2px;
+      margin-top: 0.1rem;
+      opacity: 0.75;
+    }
+
+    .bottom-center {
+      text-align: center;
+    }
+    .hashtag {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;  /* 24-28px */
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: #D8C0A0;
+      opacity: 0.7;
+      text-transform: uppercase;
+    }
+
+    .bottom-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .qr-wrapper {
+      width: 70px;   /* dikecilkan */
+      height: 70px;
+      background: rgba(20,20,20,0.3);
+      border-radius: 6px;
+      padding: 4px;
+      border: 1px solid rgba(216,192,160,0.2);
+      backdrop-filter: blur(4px);
+      margin-bottom: 4px;
+      opacity: 0.85;
+    }
+    #qrcode {
+      width: 100%;
+      height: 100%;
+    }
+    .qr-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      color: #ECE7DF;
+      opacity: 0.7;
+      text-transform: uppercase;
+    }
+
+    /* Animasi */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes expandLine {
+      0% { transform: scaleX(0); }
+      100% { transform: scaleX(1); }
+    }
+
+    /* Fade loop untuk teks sambutan */
+    .fade-text {
+      animation: softFade 6s infinite;
+    }
+    @keyframes softFade {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+    /* Pastikan teks tidak blur */
+    .welcome-text, .thankyou-small, .guest-name-display, .guest-count {
+      filter: none !important;
+    }
+
+    /* Responsif tambahan */
+    @media (min-width: 1920px) {
+      .couple-names { font-size: 7.5rem; }
+      .welcome-text { font-size: 3.4rem; }
+      .thankyou-small { font-size: 1.8rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="tv-screen">
-        <div id="displayArea" class="waiting">
-            Menunggu kedatangan tamu...
-        </div>
-        <div class="footer">Pernikahan Lisa & Raihan | 10 Juli 2026</div>
+  <!-- Background elements -->
+  <div class="monogram">RL</div>
+  <div class="light-leak"></div>
+  <div class="grain"></div>
+  <div class="particles" id="particlesContainer"></div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="top-line"></div>
+    
+    <div class="name-ornament">
+      <svg class="ornament-svg" viewBox="0 0 50 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 5 L8 5 M12 5 L16 5 M20 5 L30 5 M34 5 L38 5 M42 5 L50 5" stroke="currentColor" stroke-width="0.5"/>
+        <circle cx="10" cy="5" r="1.2" fill="currentColor"/>
+        <circle cx="32" cy="5" r="1.2" fill="currentColor"/>
+        <circle cx="40" cy="5" r="1.2" fill="currentColor"/>
+      </svg>
     </div>
 
-    <script>
-       const firebaseConfig = {
-    apiKey: "AIzaSyCDjGcWD3PZbr8UAYSGFgiyLFNH-7uuVx0",
-    authDomain: "undangan-6f675.firebaseapp.com",
-    databaseURL: "https://undangan-6f675-default-rtdb.firebaseio.com",
-    projectId: "undangan-6f675",
-    storageBucket: "undangan-6f675.firebasestorage.app",
-    messagingSenderId: "852724173933",
-    appId: "1:852724173933:web:e727d4b232a5632d588364",
-    measurementId: "G-SES81QSV4T"
-};
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const checkinsRef = database.ref('checkins');
-        
-        let currentGuestCard = null;
-        
-        checkinsRef.on('child_added', (snapshot) => {
-            const guest = snapshot.val();
-            showGuestOnTV(guest.name);
-            triggerConfetti();
-        });
-        
-        function showGuestOnTV(name) {
-            const container = document.getElementById('displayArea');
-            if (currentGuestCard) currentGuestCard.remove();
-            const card = document.createElement('div');
-            card.className = 'guest-card';
-            card.innerHTML = `<div class="guest-name">${escapeHtml(name)}</div><div class="welcome">Selamat Datang ✨</div>`;
-            container.innerHTML = '';
-            container.appendChild(card);
-            currentGuestCard = card;
-            setTimeout(() => card.classList.add('show'), 50);
-            setTimeout(() => {
-                if (currentGuestCard === card) {
-                    container.innerHTML = '<div class="waiting">Menunggu kedatangan tamu...</div>';
-                    currentGuestCard = null;
-                }
-            }, 8000);
+    <div class="couple-names">Raihan & Lisa</div>
+    
+    <div class="name-ornament">
+      <svg class="ornament-svg" viewBox="0 0 50 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 5 L8 5 M12 5 L16 5 M20 5 L30 5 M34 5 L38 5 M42 5 L50 5" stroke="currentColor" stroke-width="0.5"/>
+        <circle cx="10" cy="5" r="1.2" fill="currentColor"/>
+        <circle cx="32" cy="5" r="1.2" fill="currentColor"/>
+        <circle cx="40" cy="5" r="1.2" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <div class="wedding-date">10 Juli 2026</div>
+
+    <div class="guest-area" id="guestArea">
+      <!-- Diisi oleh JS -->
+    </div>
+
+    <div class="bottom-line"></div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <div class="bottom-left">
+      <div class="clock" id="liveClock">18:42</div>
+      <div class="date-bottom">Jumat, 10 Juli 2026</div>
+    </div>
+    <div class="bottom-center">
+      <div class="hashtag">#RaihanLisa2026</div>
+    </div>
+    <div class="bottom-right">
+      <div class="qr-wrapper" id="qrWrapper">
+        <div id="qrcode"></div>
+      </div>
+      <div class="qr-label">Scan untuk kirim doa & ucapan</div>
+    </div>
+  </div>
+
+  <!-- Firebase Config & Script -->
+  <script src="js/firebase-config.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      // ----- Partikel debu -----
+      const particlesContainer = document.getElementById('particlesContainer');
+      for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 3.5 + 1.5;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        p.style.animationDelay = Math.random() * 5 + 's';
+        p.style.animationDuration = (Math.random() * 18 + 12) + 's';
+        particlesContainer.appendChild(p);
+      }
+
+      // ----- Jam real-time -----
+      function updateClock() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        document.getElementById('liveClock').textContent = `${hours}:${minutes}`;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      // ----- QR Code menuju halaman utama bagian ucapan -----
+      new QRCode(document.getElementById('qrcode'), {
+        text: window.location.origin + '/index.html#messages',
+        width: 70,
+        height: 70,
+        colorDark: '#D8C0A0',
+        colorLight: '#1a1a1a',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // ----- Firebase: tampilan tamu -----
+      const guestArea = document.getElementById('guestArea');
+      
+      function showDefaultMessage() {
+        guestArea.innerHTML = `
+          <div class="welcome-text fade-text">Kami menantikan kehadiran Anda</div>
+          <div class="thankyou-small">Terima kasih telah menjadi bagian dari hari bahagia kami</div>
+        `;
+      }
+      
+      function showGuest(name, count) {
+        guestArea.innerHTML = `
+          <div class="guest-name-display">${name}</div>
+          <div class="guest-count">${count} Orang</div>
+          <div class="thankyou-small" style="margin-top:1.5rem;">Selamat datang di pernikahan kami</div>
+        `;
+        setTimeout(() => {
+          db.ref('display').once('value').then(snap => {
+            if (!snap.exists()) showDefaultMessage();
+          });
+        }, 10000);
+      }
+
+      showDefaultMessage();
+
+      db.ref('display').on('value', (snap) => {
+        const data = snap.val();
+        if (data && data.nama) {
+          showGuest(data.nama, data.jumlah);
+          db.ref('display').remove();
+        } else {
+          // Jangan timpa jika sedang menampilkan tamu
+          if (!document.querySelector('.guest-name-display')) {
+            showDefaultMessage();
+          }
         }
-        
-        function triggerConfetti() {
-            for (let i = 0; i < 150; i++) {
-                const conf = document.createElement('div');
-                conf.classList.add('confetti');
-                conf.style.left = Math.random() * 100 + '%';
-                conf.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
-                conf.style.animation = `confettiFall ${1 + Math.random() * 2}s linear forwards`;
-                document.body.appendChild(conf);
-                setTimeout(() => conf.remove(), 2500);
-            }
+      });
+
+      setTimeout(() => {
+        if (!document.querySelector('.guest-name-display')) {
+          showDefaultMessage();
         }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-    </script>
+      }, 2000);
+    })();
+  </script>
 </body>
 </html>
