@@ -1,338 +1,739 @@
-<!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="description" content="Undangan Pernikahan Digital - Lisa Amelia & Raihan Fajar Rizqy">
-    <title>Undangan Pernikahan | Lisa & Raihan</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/scenes.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/guestbook.css">
-    
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237A9B76'%3E%3Cpath d='M12 2L15 8.5L22 9.5L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9.5L9 8.5L12 2Z'/%3E%3C/svg%3E">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Raihan & Lisa | Wedding Invitation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&family=Great+Vibes&display=swap"
+    rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/ticket.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
+
 <body>
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-wrapper">
+      <img src="assets/images/hero-bg.png" alt="Foto Prewedding" class="hero-bg" loading="eager">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-inner">
+        <!-- Tanggal (atas) -->
+        <p class="hero-date">10 . 07 . 2026</p>
 
-    <div id="loading-screen">
-        <div class="loading-content">
-            <div class="loading-names">Lisa Amelia & Raihan Fajar Rizqy</div>
-            <div class="loading-dots"><span></span><span></span><span></span></div>
+        <!-- Nama Pasangan -->
+        <h1 class="hero-names">
+          <span class="groom-name">Raihan</span>
+          <span class="ampersand">&amp;</span>
+          <span class="bride-name">Lisa</span>
+        </h1>
+
+        <!-- Countdown Timer -->
+        <div class="countdown-container" id="countdown">
+          <div class="countdown-item">
+            <span class="countdown-number" id="days">00</span>
+            <span class="countdown-label">Hari</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="hours">00</span>
+            <span class="countdown-label">Jam</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="minutes">00</span>
+            <span class="countdown-label">Menit</span>
+          </div>
+          <div class="countdown-item">
+            <span class="countdown-number" id="seconds">00</span>
+            <span class="countdown-label">Detik</span>
+          </div>
         </div>
+
+        <!-- CTA & Scroll Indicator -->
+        <a href="#profil" class="hero-cta">
+          <span>Buka Undangan</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z" fill="currentColor" />
+          </svg>
+        </a>
+      </div>
     </div>
+  </section>
 
-    <div id="cursor-dot"></div>
-    <div id="cursor-ring"></div>
-    <div id="scroll-progress"></div>
-
-    <div id="nav-dots">
-        <button class="nav-dot" data-scene="0"></button>
-        <button class="nav-dot" data-scene="1"></button>
-        <button class="nav-dot" data-scene="2"></button>
-        <button class="nav-dot" data-scene="3"></button>
-        <button class="nav-dot" data-scene="4"></button>
-        <button class="nav-dot" data-scene="5"></button>
-        <button class="nav-dot" data-scene="6"></button>
-        <button class="nav-dot" data-scene="7"></button>
-    </div>
-
-    <button id="audio-toggle" aria-label="Toggle ambient music">
-        <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
-            <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+  <!-- PROFIL MEMPELAI -->
+  <section class="section profile-section" id="profil">
+    <div class="container">
+      <!-- Ornamen dekoratif atas -->
+      <div class="section-ornament">
+        <svg width="80" height="12" viewBox="0 0 80 12" fill="none">
+          <path d="M0 6 L12 6 M18 6 L25 6 M30 6 L50 6 M55 6 L62 6 M68 6 L80 6" stroke="#D4AF84" stroke-width="0.8" />
+          <circle cx="15" cy="6" r="2" fill="#D4AF84" opacity="0.5" />
+          <circle cx="52.5" cy="6" r="2" fill="#D4AF84" opacity="0.5" />
+          <circle cx="65" cy="6" r="2" fill="#D4AF84" opacity="0.5" />
         </svg>
-    </button>
+      </div>
 
-    <main>
-        <!-- SCENE 0 - HERO -->
-        <section id="scene0" class="scene hero-scene">
-            <div class="container hero-container">
-                <div class="hero-floral-bg"></div>
-                <div class="hero-content">
-                    <span class="hero-label">Undangan Pernikahan</span>
-                    <h1 class="hero-names">
-                        <span class="name-1">Lisa Amelia</span>
-                        <span class="ampersand easter-trigger">&</span>
-                        <span class="name-2">Raihan Fajar Rizqy</span>
-                    </h1>
-                    <p class="hero-tagline italic">"Bersama dalam kasih, tumbuh dalam iman"</p>
-                    <div class="scroll-hint">
-                        <span>Gulir ke bawah</span>
-                        <div class="scroll-arrow"></div>
-                    </div>
-                </div>
+      <div class="profile-grid">
+        <!-- Mempelai Pria -->
+        <div class="profile-card profile-groom">
+          <div class="profile-image-frame">
+            <div class="profile-image">
+              <img src="assets/images/cowo.png" alt="Raihan Fajar Rizqy" loading="lazy">
             </div>
-            <div id="petals-container"></div>
-            <div id="guest-greeting" class="guest-greeting hidden"></div>
-        </section>
+            <!-- Ornamen floral subtle di sekitar foto -->
+            <div class="floral-corner floral-tl"></div>
+            <div class="floral-corner floral-br"></div>
+          </div>
 
-        <!-- SCENE 1 - OUR STORY -->
-        <section id="scene1" class="scene story-scene">
-            <div class="container">
-                <h2 class="scene-title" data-aos="fade-up">Our Story</h2>
-                <div class="timeline">
-                    <div class="timeline-line"></div>
-                    <div class="timeline-item left" data-aos="fade-up">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-year">2019</div>
-                            <h3>Pertemuan Pertama</h3>
-                            <p>Bertemu di acara kampus, diskusi tanpa akhir menjadi awal kisah indah.</p>
-                            <div class="timeline-photo placeholder-img">Foto Pertemuan</div>
-                        </div>
-                    </div>
-                    <div class="timeline-item right" data-aos="fade-up">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-year">2021</div>
-                            <h3>Jatuh Hati</h3>
-                            <p>Perjalanan bersama menguatkan rasa, dari teman menjadi lebih dari segalanya.</p>
-                            <div class="timeline-photo placeholder-img">Foto Jatuh Hati</div>
-                        </div>
-                    </div>
-                    <div class="timeline-item left" data-aos="fade-up">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-year">2024</div>
-                            <h3>Lamaran</h3>
-                            <p>Di tepi pantai senja, sebuah pertanyaan dilontarkan dengan harap.</p>
-                            <div class="timeline-photo placeholder-img">Foto Lamaran</div>
-                        </div>
-                    </div>
-                    <div class="timeline-item right" data-aos="fade-up">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-year">2026</div>
-                            <h3>Sekarang</h3>
-                            <p>Bersiap menyatukan mimpi dalam ikatan suci pernikahan.</p>
-                            <div class="timeline-photo placeholder-img">Foto Sekarang</div>
-                        </div>
-                    </div>
-                </div>
+          <div class="profile-info">
+            <h2 class="profile-fullname">Raihan Fajar Rizqy, S.T</h2>
+            <div class="profile-role">Mempelai Pria</div>
+            <div class="profile-divider"></div>
+            <div class="profile-parents">
+              <span class="parent-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 12c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm0-10c-4.2 0-8 3.2-8 7.2 0 4.6 7.3 11.6 7.6 11.9.2.1.5.1.7 0 .3-.3 7.6-7.3 7.6-11.9C20 5.2 16.2 2 12 2z" />
+                </svg>
+              </span>
+              <span class="parent-text">Putra pertama dari<br><strong>Bapak David & Ibu Sri Mulyani</strong></span>
             </div>
-        </section>
+            <p class="profile-quote">"Cinta adalah anugerah terindah"</p>
+          </div>
+        </div>
 
-        <!-- SCENE 2 - SAVE THE DATE -->
-        <section id="scene2" class="scene savedate-scene">
-            <div class="container">
-                <div class="wedding-card" data-aos="zoom-in">
-                    <div class="card-ornament top"></div>
-                    <h2 class="card-title">Save The Date</h2>
-                    <div class="card-names">Lisa Amelia & Raihan Fajar Rizqy</div>
-                    <div class="card-date">Jumat, 10 Juli 2026</div>
-                    <div class="card-detail">
-                        <p>Akad: 08:00 WIB</p>
-                        <p>Resepsi: 10:00 - 14:00 WIB</p>
-                        <p>Kedung Ringin, Pasir Sakti, Lampung Timur</p>
-                    </div>
-                    <div class="card-ornament bottom"></div>
-                </div>
-                <div class="countdown-container" data-aos="fade-up">
-                    <div class="countdown-item"><span id="days" class="countdown-number">00</span><span class="countdown-label">Hari</span></div>
-                    <div class="countdown-item"><span id="hours" class="countdown-number">00</span><span class="countdown-label">Jam</span></div>
-                    <div class="countdown-item"><span id="minutes" class="countdown-number">00</span><span class="countdown-label">Menit</span></div>
-                    <div class="countdown-item"><span id="seconds" class="countdown-number">00</span><span class="countdown-label">Detik</span></div>
-                </div>
-                <div class="calendar-buttons" data-aos="fade-up">
-                    <button class="btn-calendar" id="add-google">Add to Google Calendar</button>
-                    <button class="btn-calendar" id="add-ical">Add to iCal</button>
-                </div>
+        <!-- Mempelai Wanita -->
+        <div class="profile-card profile-bride">
+          <div class="profile-image-frame">
+            <div class="profile-image">
+              <img src="assets/images/cewe.png" alt="Lisa Amelia" loading="lazy">
             </div>
-        </section>
+            <div class="floral-corner floral-tr"></div>
+            <div class="floral-corner floral-bl"></div>
+          </div>
 
-        <!-- SCENE 3 - DRESS CODE -->
-        <section id="scene3" class="scene dresscode-scene">
-            <div class="container">
-                <h2 class="scene-title" data-aos="fade-up">Dress in Garden Bloom</h2>
-                <p class="beach-reminder" data-aos="fade-up">
-                    <svg class="icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.5-13h-1v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                    Lokasi di tepi pasir pantai – disarankan alas kaki nyaman & perlindungan dari matahari
-                </p>
-                <div class="swatch-container" data-aos="fade-up">
-                    <div class="swatch" data-color="sage" data-tooltip="Sage Green - Elegi alam"></div>
-                    <div class="swatch" data-color="dusty-rose" data-tooltip="Dusty Rose - Romantis lembut"></div>
-                    <div class="swatch" data-color="cream" data-tooltip="Cream - Murni bersih"></div>
-                    <div class="swatch" data-color="lavender" data-tooltip="Lavender - Mistis bunga"></div>
-                    <div class="swatch" data-color="mocha" data-tooltip="Mocha - Hangat tanah"></div>
-                    <div class="swatch" data-color="blush" data-tooltip="Blush Pink - Manis muda"></div>
-                </div>
-                <div class="dresscode-notes" data-aos="fade-up">
-                    <div class="note-item">Warna-warna natural & floral yang segar</div>
-                    <div class="note-item">Hindari warna putih polos & hitam</div>
-                    <div class="note-item">Nyaman dan elegan untuk outdoor pantai</div>
-                </div>
+          <div class="profile-info">
+            <h2 class="profile-fullname">Lisa Amelia, S.Stat, M.Si</h2>
+            <div class="profile-role">Mempelai Wanita</div>
+            <div class="profile-divider"></div>
+            <div class="profile-parents">
+              <span class="parent-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 12c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm0-10c-4.2 0-8 3.2-8 7.2 0 4.6 7.3 11.6 7.6 11.9.2.1.5.1.7 0 .3-.3 7.6-7.3 7.6-11.9C20 5.2 16.2 2 12 2z" />
+                </svg>
+              </span>
+              <span class="parent-text">Putri kedua dari<br><strong>Bapak Supriyadi & Ibu Siti</strong></span>
             </div>
-        </section>
+            <p class="profile-quote">"Bersama dalam suka dan duka"</p>
+          </div>
+        </div>
+      </div>
 
-        <!-- SCENE 4 - VENUE & MAP -->
-        <section id="scene4" class="scene venue-scene">
-            <div class="container">
-                <h2 class="scene-title" data-aos="fade-up">Venue & Lokasi</h2>
-                <div class="venue-grid">
-                    <div class="venue-info" data-aos="fade-right">
-                        <div class="venue-card">
-                            <h3>Akad Nikah</h3>
-                            <p class="venue-name">Kedung Ringin Beach</p>
-                            <p class="venue-address">Kedung Ringin, Kec. Pasir Sakti, Kabupaten Lampung Timur, Lampung 34387</p>
-                            <p class="venue-time">08:00 WIB</p>
-                            <div class="venue-buttons">
-                                <a href="https://waze.com/ul?ll=-5.562134,105.773799&navigate=yes" class="btn-venue waze" target="_blank">Buka Waze</a>
-                                <a href="https://maps.google.com/?q=-5.562134,105.773799" class="btn-venue google-maps" target="_blank">Google Maps</a>
-                            </div>
-                        </div>
-                        <div class="venue-card">
-                            <h3>Resepsi</h3>
-                            <p class="venue-name">Kedung Ringin Beach (Area yang sama)</p>
-                            <p class="venue-address">Kedung Ringin, Pasir Sakti, Lampung Timur</p>
-                            <p class="venue-time">10:00 - 14:00 WIB</p>
-                            <div class="venue-buttons">
-                                <a href="https://waze.com/ul?ll=-5.562134,105.773799&navigate=yes" class="btn-venue waze" target="_blank">Buka Waze</a>
-                                <a href="https://maps.google.com/?q=-5.562134,105.773799" class="btn-venue google-maps" target="_blank">Google Maps</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="map-container" data-aos="fade-left">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3969.000!2d105.773799!3d-5.562134!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e41c4b3b8b3b8b3%3A0x0!2zNcKwMzMnNDMuNyJTIDEwNcKwNDYnMjUuNyJF!5e0!3m2!1sen!2sid!4v1234567890" width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SCENE 5 - RSVP -->
-        <section id="scene5" class="scene rsvp-scene">
-            <div class="container">
-                <h2 class="scene-title" data-aos="fade-up">Konfirmasi Kehadiran</h2>
-                <p class="rsvp-subtitle" data-aos="fade-up">Mohon isi data di bawah untuk memudahkan kami</p>
-                
-                <div id="saved-guest-info" class="saved-guest-info hidden" data-aos="fade-up">
-                    <div class="saved-card">
-                        <h3>Kode Unik Anda</h3>
-                        <p id="saved-code-display" class="saved-code"></p>
-                        <div id="saved-qrcode" class="qrcode-center"></div>
-                        <p class="saved-note">Simpan kode ini untuk registrasi di lokasi.</p>
-                        <button id="reset-guest-btn" class="btn-reset">Lakukan RSVP Ulang</button>
-                    </div>
-                </div>
-                
-                <form id="rsvp-form" data-aos="fade-up">
-                    <div class="form-group"><input type="text" id="rsvp-name" placeholder="Nama Lengkap" required></div>
-                    <div class="form-group radio-group">
-                        <label class="radio-pill"><input type="radio" name="attendance" value="hadir" required> <span>Hadir</span></label>
-                        <label class="radio-pill"><input type="radio" name="attendance" value="tidak"> <span>Tidak Hadir</span></label>
-                    </div>
-                    <div class="form-group" id="guest-count-group" style="display:none;">
-                        <select id="guest-count"><option value="1">1 Tamu</option><option value="2">2 Tamu</option><option value="3">3 Tamu</option><option value="4">4 Tamu</option></select>
-                    </div>
-                    <button type="submit" class="btn-submit">Kirim Konfirmasi</button>
-                </form>
-                <div id="rsvp-success" class="rsvp-success hidden"></div>
-                <div id="rsvp-error" class="rsvp-error hidden"></div>
-            </div>
-        </section>
-
-        <!-- SCENE 6 - GUESTBOOK -->
-        <section id="scene6" class="scene guestbook-scene">
-            <div class="container">
-                <h2 class="scene-title" data-aos="fade-up">Wall of Love & Harapan</h2>
-                <p class="guestbook-subtitle" data-aos="fade-up">Tuliskan doa dan harapan untuk kedua mempelai</p>
-                <div class="guestbook-grid" data-aos="fade-up">
-                    <div class="messages-wall">
-                        <h3>Pesan dari Tamu</h3>
-                        <div id="messages-list" class="messages-list"><div class="empty-message">Belum ada pesan. Jadilah yang pertama.</div></div>
-                    </div>
-                    <div class="guestbook-interaction">
-                        <div class="send-message-form">
-                            <h3>Tulis Pesan & Harapan</h3>
-                            <input type="text" id="guest-name" placeholder="Nama Anda" class="form-input">
-                            <textarea id="guest-message" rows="3" placeholder="Doa / harapan / kesan untuk kedua mempelai..." class="form-input"></textarea>
-                            <button id="submit-message" class="btn-submit">Kirim Pesan</button>
-                        </div>
-                        <div class="ai-chat-box">
-                            <h3>AI Wedding Assistant</h3>
-                            <div class="chat-messages" id="chat-messages">
-                                <div class="chat-bot">Halo! Aku asisten AI pernikahan Lisa & Raihan. Tanyakan apa saja tentang acara, lokasi, dress code, atau minta saran ucapan.</div>
-                            </div>
-                            <div class="chat-input-area">
-                                <input type="text" id="chat-input" placeholder="Tanya sesuatu..." class="form-input">
-                                <button id="send-chat" class="btn-chat">Kirim</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SCENE 7 - GIFT & CLOSING -->
-        <section id="scene7" class="scene gift-closing-scene">
-            <div class="container">
-                <h2 class="scene-title" data-aos="fade-up">Tanda Kasih</h2>
-                <div class="gift-cards" data-aos="fade-up">
-                    <div class="gift-card">
-                        <div class="bank-name">Bank Mandiri</div>
-                        <div class="account-name">a.n. Lisa Amelia</div>
-                        <div class="account-number">1234567890 <button class="copy-btn" data-copy="1234567890">Salin</button></div>
-                        <div class="qr-placeholder">Scan QR</div>
-                        <div class="qr-code"></div>
-                    </div>
-                    <div class="gift-card">
-                        <div class="bank-name">Bank BCA</div>
-                        <div class="account-name">a.n. Raihan Fajar Rizqy</div>
-                        <div class="account-number">0987654321 <button class="copy-btn" data-copy="0987654321">Salin</button></div>
-                        <div class="qr-placeholder">Scan QR</div>
-                        <div class="qr-code"></div>
-                    </div>
-                </div>
-                <div class="closing-section" data-aos="fade-up">
-                    <div class="closing-ornament">
-                        <svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M12 2L15 8.5L22 9.5L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9.5L9 8.5L12 2Z"/></svg>
-                    </div>
-                    <p class="closing-quote italic">"Cinta bukan saling menatap satu sama lain, tetapi melihat ke arah yang sama bersama-sama."</p>
-                    <div class="signature">Lisa & Raihan</div>
-                    <div class="family-name">Keluarga Besar Amelia & Keluarga Besar Rizqy</div>
-                    <div class="contact-cs">
-                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                        Hubungi: <a href="tel:+628123456789">+62 812-3456-7890</a> (Lisa)
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Easter Egg Modal -->
-    <div id="easter-modal" class="easter-modal hidden">
-        <div class="easter-content"><span class="close-modal">&times;</span><h2>Secret Garden</h2><p>Terima kasih telah menemukan kejutan ini.</p><p>Doa terbaik untuk cinta yang abadi.</p></div>
+      <!-- Ornamen dekoratif bawah -->
+      <div class="section-ornament bottom">
+        <svg width="80" height="12" viewBox="0 0 80 12" fill="none">
+          <path d="M0 6 L12 6 M18 6 L25 6 M30 6 L50 6 M55 6 L62 6 M68 6 L80 6" stroke="#D4AF84" stroke-width="0.8" />
+          <circle cx="15" cy="6" r="2" fill="#D4AF84" opacity="0.5" />
+          <circle cx="52.5" cy="6" r="2" fill="#D4AF84" opacity="0.5" />
+          <circle cx="65" cy="6" r="2" fill="#D4AF84" opacity="0.5" />
+        </svg>
+      </div>
     </div>
+  </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/countdown.js"></script>
-    <script src="js/rsvp.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/easter.js"></script>
-    <script src="js/scroll.js"></script>
-    <script src="js/guestbook.js"></script>
-    <!-- Inisialisasi Firebase (compat version) -->
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCDjGcWD3PZbr8UAYSGFgiyLFNH-7uuVx0",
-        authDomain: "undangan-6f675.firebaseapp.com",
-        databaseURL: "https://undangan-6f675-default-rtdb.firebaseio.com",
-        projectId: "undangan-6f675",
-        storageBucket: "undangan-6f675.firebasestorage.app",
-        messagingSenderId: "852724173933",
-        appId: "1:852724173933:web:e727d4b232a5632d588364",
-        measurementId: "G-SES81QSV4T"
-    };
-    firebase.initializeApp(firebaseConfig);
-    window.db = firebase.database();
-</script>
+  <!-- DETAIL ACARA -->
+  <!-- DETAIL ACARA -->
+  <section class="section events-section" id="events">
+    <div class="container">
+      <div class="events-grid">
+
+        <!-- Card: Akad Nikah -->
+        <div class="event-card">
+          <div class="event-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          </div>
+          <h3 class="event-title">Akad Nikah</h3>
+          <p class="event-date">Jumat, 10 Juli 2026</p>
+          <p class="event-time">Pukul 08:00 WIB</p>
+          <div class="event-divider"></div>
+          <div class="event-venue-group">
+            <span class="venue-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+            </span>
+            <p class="event-venue">Kedung Ringin</p>
+          </div>
+          <p class="event-address">Kec. Pasir Sakti, Kab. Lampung Timur, Lampung 34387</p>
+          <div class="event-buttons">
+            <a href="https://maps.app.goo.gl/1iDJfQ6ewGsckZ879" target="_blank" class="event-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+              <span>Google Maps</span>
+            </a>
+            <a href="https://ul.waze.com/ul?place=ChIJsRMsYIYAQS4R_6RNYtw3NwM&ll=-5.56010700%2C105.77323670&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
+              target="_blank" class="event-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <span>Waze</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card: Resepsi (sama, hanya icon dan judul berbeda) -->
+        <div class="event-card">
+          <div class="event-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M18 6c0-2.21-1.79-4-4-4S10 3.79 10 6c0 2.21 1.79 4 4 4s4-1.79 4-4zm-6 0c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zM8 13c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm10 0c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm-6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+            </svg>
+          </div>
+          <h3 class="event-title">Resepsi</h3>
+          <p class="event-date">Jumat, 10 Juli 2026</p>
+          <p class="event-time">Pukul 10:00 WIB</p>
+          <div class="event-divider"></div>
+          <div class="event-venue-group">
+            <span class="venue-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+            </span>
+            <p class="event-venue">Kedung Ringin</p>
+          </div>
+          <p class="event-address">Kec. Pasir Sakti, Kab. Lampung Timur, Lampung 34387</p>
+          <div class="event-buttons">
+            <a href="https://maps.app.goo.gl/1iDJfQ6ewGsckZ879" target="_blank" class="event-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+              <span>Google Maps</span>
+            </a>
+            <a href="https://ul.waze.com/ul?place=ChIJsRMsYIYAQS4R_6RNYtw3NwM&ll=-5.56010700%2C105.77323670&navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location"
+              target="_blank" class="event-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <span>Waze</span>
+            </a>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- GALERI -->
+  <section class="section gallery-section" id="gallery">
+    <div class="container">
+      <h2 class="section-title gallery-title">Galeri Kenangan</h2>
+
+      <div class="gallery-carousel-container">
+        <!-- Carousel utama -->
+        <div class="gallery-main">
+          <div class="gallery-track-container">
+            <div class="gallery-track" id="galleryTrack">
+              <!-- Slide akan diisi oleh JavaScript -->
+            </div>
+          </div>
+
+          <!-- Tombol navigasi kiri -->
+          <button class="gallery-arrow gallery-arrow-left" id="galleryPrev" aria-label="Sebelumnya">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg>
+          </button>
+
+          <!-- Tombol navigasi kanan -->
+          <button class="gallery-arrow gallery-arrow-right" id="galleryNext" aria-label="Selanjutnya">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+            </svg>
+          </button>
+
+          <!-- Hint fullscreen (zoom icon) -->
+          <div class="gallery-zoom-hint" id="galleryZoomHint">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Caption -->
+        <div class="gallery-caption" id="galleryCaption">Pertama kali bertemu – 2021</div>
+
+        <!-- Pagination dots -->
+        <div class="gallery-dots" id="galleryDots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SISTEM TIKET -->
+  <section class="section ticket-section" id="ticket">
+    <div class="container">
+      <h2 class="section-title ticket-main-title">Tiket Digital</h2>
+      <p class="ticket-description">Daftarkan diri Anda untuk mendapatkan tiket digital. Tunjukkan kepada panitia saat
+        hadir.</p>
+
+      <div class="ticket-panel" id="ticketPanel">
+        <!-- Form Pendaftaran (default tampil) -->
+        <div class="ticket-form-container" id="ticketFormContainer">
+          <form id="ticketForm">
+            <!-- Nama Lengkap -->
+            <div class="input-group">
+              <label for="nama" class="input-label">Nama Lengkap</label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M12 12c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm0-10c-4.2 0-8 3.22-8 8.2 0 5.2 7.3 11.8 7.6 12.1.2.2.5.2.7 0 .3-.3 7.6-6.9 7.6-12.1C20 5.22 16.2 2 12 2z" />
+                  </svg>
+                </span>
+                <input type="text" id="nama" name="nama" class="input-field" placeholder="Contoh: Budi Santoso"
+                  required>
+              </div>
+            </div>
+
+            <!-- Jumlah Tamu -->
+            <div class="input-group">
+              <label for="jumlah" class="input-label">Jumlah Tamu (termasuk Anda)</label>
+              <div class="input-wrapper select-wrapper">
+                <span class="input-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-1 .05 1.16.84 2 1.87 2 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                  </svg>
+                </span>
+                <select id="jumlah" name="jumlah" class="input-field" required>
+                  <option value="1">1 Orang</option>
+                  <option value="2">2 Orang</option>
+                  <option value="3">3 Orang</option>
+                  <option value="4">4 Orang</option>
+                  <option value="5">5 Orang</option>
+                </select>
+                <span class="select-arrow">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 10l5 5 5-5z" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Info tamu terdaftar -->
+            <div class="ticket-info-text">
+              <span>Saat ini sudah ada <strong id="registeredCount">0</strong> tamu yang terdaftar</span>
+            </div>
+
+            <!-- Tombol Submit -->
+            <button type="submit" class="ticket-submit-btn" id="submitTicketBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              </svg>
+              <span>Konfirmasi Kehadiran</span>
+            </button>
+          </form>
+          <div id="ticketMessage" class="ticket-message"></div>
+        </div>
+      </div>
+
+      <!-- Tiket Generated (hidden default) -->
+      <div class="ticket-result" id="ticketResult" style="display: none;"></div>
+    </div>
+    </div>
+  </section>
+
+  <!-- PESAN & UCAPAN -->
+  <section class="section messages-section" id="messages">
+    <div class="container">
+      <h2 class="section-title">Ucapan & Doa</h2>
+      <p class="messages-subtitle">Berikan doa dan ucapan terbaik untuk kedua mempelai</p>
+
+      <div class="messages-layout">
+        <!-- Form Ucapan -->
+        <div class="message-form-card">
+          <form id="messageForm">
+            <div class="form-group">
+              <label for="msgNama">Nama Anda</label>
+              <div class="input-icon-wrapper">
+                <svg class="input-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                <input type="text" id="msgNama" placeholder="Tulis nama Anda" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="msgPesan">Pesan & Doa</label>
+              <textarea id="msgPesan" placeholder="Tuliskan ucapan atau doa untuk kami..." maxlength="300" rows="4"
+                required></textarea>
+              <div class="char-counter-wrapper">
+                <span class="char-counter" id="charCounter">0/300</span>
+              </div>
+            </div>
+            <button type="submit" class="btn-send-message" id="sendMessageBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+              <span>Kirim Ucapan</span>
+            </button>
+          </form>
+          <div id="messageFormFeedback" class="form-feedback"></div>
+        </div>
+
+        <!-- Daftar Ucapan -->
+        <div class="messages-feed-container">
+          <h3 class="feed-title">Doa & Ucapan Terbaru</h3>
+          <div class="messages-feed" id="messagesFeed">
+            <!-- Pesan akan dimuat dari localStorage -->
+          </div>
+          <div id="emptyMessages" class="empty-messages">
+            <p>Belum ada ucapan. Jadilah yang pertama!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AMPLOP DIGITAL & SPONSOR --><!-- AMPLOP DIGITAL & SPONSOR -->
+  <section class="section gift-section" id="gift">
+    <div class="container">
+      <div class="gift-sponsor-grid">
+
+        <!-- KOLOM KIRI: Hadiah & Doa -->
+        <div class="gift-card">
+          <h3 class="gift-title">Hadiah & Doa</h3>
+          <p class="gift-description">Doa restu Anda adalah hadiah terbaik. Namun jika ingin berbagi kasih, dapat
+            melalui:</p>
+
+          <!-- QR Code Area -->
+          <div class="qr-area">
+            <div class="qr-label">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm11 0h2v2h-2v-2zm0 4h2v2h-2v-2zm-4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm-4 0h2v2h-2v-2z" />
+              </svg>
+              <span>Scan QR Dana</span>
+            </div>
+            <div class="qr-placeholder" id="qrPlaceholder">
+              <img src="assets/images/qr.png" alt="QR Code Dana" class="qr-image">
+              </svg>
+            </div>
+          </div>
+
+          <!-- Informasi Rekening -->
+          <div class="bank-info">
+            <div class="bank-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 10h16v7H4v-7zm2 2v3h12v-3H6zm12-6H6v2h12V6zM2 22h20v-2H2v2z" />
+              </svg>
+              <span>Transfer Bank</span>
+            </div>
+            <div class="bank-detail">
+              <span class="bank-name">BCA</span>
+              <span class="bank-number" id="rekNumber">1234567890</span>
+              <span class="bank-owner">a.n. Raihan Fajar Rizqy</span>
+            </div>
+          </div>
+
+          <!-- Tombol Salin Rekening -->
+          <button class="btn-copy-rek" id="copyRekBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+            </svg>
+            <span>Salin Nomor Rekening</span>
+          </button>
+
+          <!-- Notifikasi copy -->
+          <div class="copy-toast" id="copyToast">Nomor rekening berhasil disalin</div>
+        </div>
+        <script>// Fungsi copy nomor rekening
+          (function () {
+            const copyBtn = document.getElementById('copyRekBtn');
+            const toast = document.getElementById('copyToast');
+            const rekNumber = document.getElementById('rekNumber').textContent;
+
+            if (copyBtn) {
+              copyBtn.addEventListener('click', async () => {
+                try {
+                  await navigator.clipboard.writeText(rekNumber);
+                  toast.classList.add('show');
+                  setTimeout(() => {
+                    toast.classList.remove('show');
+                  }, 2500);
+                } catch (err) {
+                  alert('Gagal menyalin nomor rekening. Silakan salin manual.');
+                }
+              });
+            }
+          })();
+        </script>
+
+        <!-- KOLOM KANAN: Sponsor -->
+        <div class="sponsor-card">
+          <h3 class="sponsor-title">Didukung oleh</h3>
+          <div class="sponsor-content">
+            <div class="sponsor-logo-placeholder">
+              <div class="sponsor-logo">
+                <img src="assets/images/neo.png" alt="Neo Bitess Logo" loading="lazy">
+              </div>
+            <div class="sponsor-tagline">Mewujudkan momen tak terlupakan</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PENUTUP -->
+  <section class="section closing-section" id="closing">
+    <div class="container">
+      <!-- Ayat Al-Qur'an -->
+      <div class="ayat-container fade-on-scroll">
+        <div class="ayat-label">QS. Ar-Rum: 21</div>
+        <div class="ayat-arabic">
+          وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم
+          مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ
+        </div>
+        <div class="ayat-latin">
+          Wa min āyātihī an khalaqa lakum min anfusikum azwājan litaskunū ilaihā wa ja'ala bainakum mawaddatanw wa
+          raḥmah, inna fī żālika la`āyātil liqaumiy yatafakkarūn
+        </div>
+        <div class="ayat-translation">
+          "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu
+          sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan
+          sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang
+          berpikir."
+        </div>
+      </div>
+
+      <!-- Ucapan Penutup -->
+      <div class="closing-message fade-on-scroll">
+        <p class="closing-thanks">
+          Merupakan suatu kehormatan dan kebahagiaan bagi kami sekeluarga, apabila Bapak/Ibu/Saudara/i berkenan hadir
+          serta memberikan doa restu kepada kedua mempelai.
+        </p>
+        <p class="closing-gratitude">
+          Atas kehadiran dan doa restunya, kami ucapkan terima kasih.
+        </p>
+      </div>
+
+      <!-- Ornamen dan Nama Mempelai -->
+      <div class="closing-names-wrapper fade-on-scroll">
+        <div class="ornament-line"></div>
+        <div class="closing-couple-name">
+          Raihan & Lisa 
+        </div>
+        <div class="ornament-line"></div>
+      </div>
+
+      <!-- Lokasi & Tahun -->
+      <div class="closing-location-wrapper fade-on-scroll">
+        <div class="location-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+          </svg>
+        </div>
+        <span class="closing-location">Lampung Timur, Indonesia</span>
+        <span class="separator">·</span>
+        <span class="closing-year">2026</span>
+      </div>
+
+      <!-- CTA: Simpan ke Kalender -->
+      <div class="calendar-cta fade-on-scroll">
+        <button class="btn-calendar" id="saveCalendarBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM7 11h5v5H7v-5z" />
+          </svg>
+          <span>Simpan ke Kalender</span>
+        </button>
+        <p class="calendar-hint">Tambahkan ke kalender agar tidak terlewat</p>
+      </div>
+
+      <!-- Footer -->
+      <footer class="wedding-footer fade-on-scroll">
+        <div class="footer-divider"></div>
+        <p class="copyright">© 2026 Raihan & Lisa Wedding</p>
+        <p class="footer-love">With love</p>
+      </footer>
+    </div>
+    <script>// Animasi fade-in saat scroll
+      (function () {
+        const fadeElements = document.querySelectorAll('.fade-on-scroll');
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, { threshold: 0.15 });
+
+        fadeElements.forEach(el => observer.observe(el));
+      })();
+
+      // Fungsi download file .ics untuk simpan ke kalender
+      (function () {
+        const calendarBtn = document.getElementById('saveCalendarBtn');
+
+        if (calendarBtn) {
+          calendarBtn.addEventListener('click', () => {
+            // Data event
+            const event = {
+              title: 'Pernikahan Raihan & Lisa',
+              location: 'Lampung Timur, Indonesia',
+              description: 'Undangan Pernikahan Raihan Fajar Rizqy & Lisa Amelia',
+              startDate: '20260710T030000Z', // 10 Juli 2026, 10:00 WIB -> 03:00 UTC
+              endDate: '20260710T050000Z'    // Durasi 2 jam
+            };
+
+            const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Raihan&Lisa//Wedding//ID
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:${Date.now()}@raihanlisa-wedding
+DTSTART:${event.startDate}
+DTEND:${event.endDate}
+SUMMARY:${event.title}
+LOCATION:${event.location}
+DESCRIPTION:${event.description}
+END:VEVENT
+END:VCALENDAR`;
+
+            // Buat blob dan download
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'raihan-lisa-wedding.ics';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+          });
+        }
+      })();
+    </script>
+  </section>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/countdown.js"></script>
+  <script src="js/gallery.js"></script>
+  <script src="js/ticket.js"></script>
+  <script src="js/messages.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    // Intersection Observer for fade-in
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in');
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(section => observer.observe(section));
+  </script>
+  <!-- MUSIC PLAYER -->
+  <div class="music-player" id="musicPlayer">
+    <button class="music-toggle" id="musicToggle" aria-label="Putar musik">
+      <svg class="music-icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+      </svg>
+      <svg class="music-icon-pause" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
+        style="display: none;">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+      </svg>
+    </button>
+    <audio id="bgMusic" loop preload="auto">
+      <source src="assets/audio/wedding.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+  <script>
+    // Music Player Control
+    (function () {
+      const audio = document.getElementById('bgMusic');
+      const toggleBtn = document.getElementById('musicToggle');
+      const playIcon = document.querySelector('.music-icon-play');
+      const pauseIcon = document.querySelector('.music-icon-pause');
+
+      if (!audio || !toggleBtn) return;
+
+      // Set volume awal (50%)
+      audio.volume = 0.5;
+
+      // Fungsi update tampilan tombol
+      function updateButtonState(isPlaying) {
+        if (isPlaying) {
+          playIcon.style.display = 'none';
+          pauseIcon.style.display = 'block';
+          toggleBtn.classList.add('playing');
+        } else {
+          playIcon.style.display = 'block';
+          pauseIcon.style.display = 'none';
+          toggleBtn.classList.remove('playing');
+        }
+      }
+
+      // Toggle play/pause
+      function toggleMusic() {
+        if (audio.paused) {
+          audio.play().then(() => {
+            updateButtonState(true);
+          }).catch(err => {
+            console.warn('Autoplay blocked:', err);
+            // Browser memblokir autoplay, user harus klik tombol dulu
+          });
+        } else {
+          audio.pause();
+          updateButtonState(false);
+        }
+      }
+
+      // Event listener tombol
+      toggleBtn.addEventListener('click', toggleMusic);
+
+      // Coba autoplay saat halaman dimuat (kemungkinan diblokir browser)
+      window.addEventListener('load', () => {
+        audio.play().then(() => {
+          updateButtonState(true);
+        }).catch(() => {
+          // Autoplay diblokir, tampilkan ikon play
+          updateButtonState(false);
+        });
+      });
+
+      // Update ikon saat musik berakhir (tidak mungkin karena loop)
+      audio.addEventListener('pause', () => updateButtonState(false));
+      audio.addEventListener('play', () => updateButtonState(true));
+
+      // Opsional: kontrol volume dengan scroll? (tidak perlu)
+    })();
+  </script>
 </body>
+
 </html>
